@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="DMS World Clock mark">
+  <rect width="128" height="128" rx="18" fill="#fffaf0"/>
+  <circle cx="64" cy="64" r="44" fill="none" stroke="#0f766e" stroke-width="8"/>
+  <path d="M64 30v36l24 15" fill="none" stroke="#17211b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M22 82h84" stroke="#f6c453" stroke-width="8" stroke-linecap="round"/>
+  <path d="M34 98h60" stroke="#c2573d" stroke-width="8" stroke-linecap="round"/>
+</svg>

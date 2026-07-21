@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Clock</title>
+  <link rel="icon" href="assets/clock-mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Offline world clock and time converter</p>
+        <h1>World Clock</h1>
+      </div>
+      <div class="top-actions" aria-label="Clock settings">
+        <a class="tool-button" href="README.pdf" title="Open the README PDF">ReadMe</a>
+        <button id="themeToggle" class="tool-button" type="button" aria-pressed="false" title="Toggle light or dark theme">Dark</button>
+        <button id="formatToggle" class="tool-button" type="button" aria-pressed="false" title="Toggle 12 or 24 hour time">24</button>
+        <button id="sortEarly" class="tool-button" type="button" title="Sort by earliest offset">Sort +</button>
+        <button id="sortLate" class="tool-button" type="button" title="Sort by latest offset">Sort -</button>
+        <button id="copyLink" class="tool-button primary" type="button" title="Copy a link to this setup">Link</button>
+      </div>
+    </header>
+
+    <section class="control-panel" aria-label="Location controls">
+      <form id="addZoneForm" class="add-zone-form">
+        <label for="zoneSearch">Place or time zone</label>
+        <div class="add-zone-row">
+          <input id="zoneSearch" list="zoneOptions" autocomplete="off" placeholder="Search country, standard time, or abbreviation: India, IST, CET/CEST...">
+          <button type="submit">Add</button>
+        </div>
+        <datalist id="zoneOptions"></datalist>
+      </form>
+      <div class="now-card" aria-live="polite">
+        <span>Selected time</span>
+        <strong id="selectedSummary">Move over an hour tile</strong>
+      </div>
+    </section>
+
+    <aside id="cetChangeNote" class="cet-change-note" aria-live="polite"></aside>
+
+    <section class="clock-board" aria-label="World clock comparison">
+      <div class="board-header">
+        <div class="location-heading">Location</div>
+        <div id="dateHeader" class="timeline date-header"></div>
+      </div>
+      <div id="clockRows" class="clock-rows"></div>
+    </section>
+  </main>
+
+  <template id="rowTemplate">
+    <article class="clock-row">
+      <div class="location-card">
+        <div class="row-actions">
+          <button class="icon-button home-action" type="button" title="Set as home">Home</button>
+          <button class="icon-button up-action" type="button" title="Move up">Up</button>
+          <button class="icon-button down-action" type="button" title="Move down">Down</button>
+          <button class="icon-button remove-action" type="button" title="Remove">X</button>
+        </div>
+        <div class="offset"></div>
+        <h2></h2>
+        <p class="zone-name"></p>
+        <strong class="current-time"></strong>
+        <span class="current-date"></span>
+      </div>
+      <div class="timeline hour-grid"></div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
