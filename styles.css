@@ -264,7 +264,14 @@ h1 {
 }
 
 .location-card.is-home {
-  background: linear-gradient(90deg, rgba(47, 111, 78, 0.18), rgba(var(--panel-rgb), 0.98));
+  background: linear-gradient(90deg, rgba(47, 111, 78, 0.34), rgba(var(--panel-rgb), 0.98));
+  box-shadow: inset 5px 0 0 var(--home);
+}
+
+.location-card.is-home .home-action {
+  background: var(--home);
+  border-color: var(--home);
+  color: #fffaf0;
 }
 
 .row-actions {
