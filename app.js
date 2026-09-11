@@ -94,6 +94,7 @@ const ZONE_CATALOG = [
 
 const DEFAULT_STATE = {
   zones: ["Asia/Singapore", "Asia/Manila", "Europe/Copenhagen", "Australia/Sydney", "Asia/Kolkata", "Pacific/Auckland"],
+  zoneNotes: {},
   homeZone: "Asia/Singapore",
   hour24: false,
   theme: "light",
@@ -101,12 +102,14 @@ const DEFAULT_STATE = {
 };
 
 const STORAGE_KEY = "dms-world-clock-state";
+const ZONE_NOTE_MAX_LENGTH = 30;
 const SLOT_COUNT = 48;
 const SLOT_BACKTRACK = 8;
 let state = loadState();
 let hoverIndex = null;
 let timer = null;
 let searchIsActive = false;
+let noteEditZone = null;
 
 const elements = {
   zoneSearch: document.querySelector("#zoneSearch"),
@@ -151,11 +154,32 @@ function normalizeState(input) {
 
   return {
     zones: nextZones,
+    zoneNotes: normalizeZoneNotes(input.zoneNotes, nextZones),
     homeZone,
     hour24: Boolean(input.hour24),
     theme: input.theme === "dark" ? "dark" : "light",
     selectedIndex: Number.isInteger(input.selectedIndex) ? input.selectedIndex : null
   };
+}
+
+function normalizeZoneNotes(input, zones) {
+  const notes = {};
+  if (!input || typeof input !== "object") {
+    return notes;
+  }
+
+  for (const zone of zones) {
+    const note = sanitizeZoneNote(input[zone]);
+    if (note) {
+      notes[zone] = note;
+    }
+  }
+
+  return notes;
+}
+
+function sanitizeZoneNote(note) {
+  return String(note || "").slice(0, ZONE_NOTE_MAX_LENGTH);
 }
 
 function normalizeZoneName(zoneName) {
@@ -309,7 +333,7 @@ function classifyHour(hour) {
 }
 
 function render({ force = false } = {}) {
-  if (!force && searchIsActive) {
+  if (!force && (searchIsActive || noteEditZone)) {
     return;
   }
 
@@ -412,11 +436,14 @@ function renderRows(now, slots, selectedIndex) {
     const row = elements.rowTemplate.content.firstElementChild.cloneNode(true);
     const locationCard = row.querySelector(".location-card");
     const hourGrid = row.querySelector(".hour-grid");
+    const noteInput = row.querySelector(".zone-note");
     const offset = getOffsetMinutes(now, zone.zone);
 
     locationCard.classList.toggle("is-home", zone.zone === state.homeZone);
     row.querySelector(".offset").textContent = formatOffset(offset, homeOffset);
     row.querySelector("h2").textContent = zone.label;
+    noteInput.value = getZoneNote(zone.zone);
+    noteInput.setAttribute("aria-label", `Description for ${zone.label}`);
     row.querySelector(".zone-name").textContent = `${zone.standardName} / ${getCurrentAbbreviation(now, zone.zone)} / ${zone.zone}`;
     row.querySelector(".current-time").textContent = formatDate(now, zone.zone, {
       hour: "numeric",
@@ -435,6 +462,19 @@ function renderRows(now, slots, selectedIndex) {
     row.querySelector(".up-action").addEventListener("click", () => moveZone(zone.zone, -1));
     row.querySelector(".down-action").addEventListener("click", () => moveZone(zone.zone, 1));
     row.querySelector(".remove-action").addEventListener("click", () => removeZone(zone.zone));
+    noteInput.addEventListener("focus", () => {
+      noteEditZone = zone.zone;
+    });
+    noteInput.addEventListener("input", () => {
+      const sanitized = setZoneNote(zone.zone, noteInput.value);
+      if (noteInput.value !== sanitized) {
+        noteInput.value = sanitized;
+      }
+    });
+    noteInput.addEventListener("blur", () => {
+      noteEditZone = null;
+      render({ force: true });
+    });
 
     slots.forEach((slot, index) => {
       const hour = getHourNumber(slot, zone.zone);
@@ -485,6 +525,22 @@ function renderSelectedSummary(slots, selectedIndex) {
   });
 
   elements.selectedSummary.textContent = details.join(" | ");
+}
+
+function getZoneNote(zone) {
+  return state.zoneNotes?.[zone] || "";
+}
+
+function setZoneNote(zone, note) {
+  const sanitized = sanitizeZoneNote(note);
+  state.zoneNotes = { ...(state.zoneNotes || {}) };
+  if (sanitized) {
+    state.zoneNotes[zone] = sanitized;
+  } else {
+    delete state.zoneNotes[zone];
+  }
+  persist();
+  return sanitized;
 }
 
 function highlightIndex(index) {
@@ -546,6 +602,9 @@ function removeZone(zone) {
   }
 
   state.zones = state.zones.filter((item) => item !== zone);
+  if (state.zoneNotes) {
+    delete state.zoneNotes[zone];
+  }
   if (state.homeZone === zone) {
     state.homeZone = state.zones[0];
   }
