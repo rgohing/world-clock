@@ -102,7 +102,7 @@ const DEFAULT_STATE = {
 };
 
 const STORAGE_KEY = "dms-world-clock-state";
-const ZONE_NOTE_MAX_LENGTH = 30;
+const ZONE_NOTE_MAX_LENGTH = 100;
 const SLOT_COUNT = 48;
 const SLOT_BACKTRACK = 8;
 let state = loadState();
