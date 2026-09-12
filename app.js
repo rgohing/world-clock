@@ -97,6 +97,7 @@ const DEFAULT_STATE = {
   zoneNotes: {},
   homeZone: "Europe/Copenhagen",
   hour24: false,
+  sortDirection: null,
   theme: "light",
   selectedIndex: null
 };
@@ -117,8 +118,7 @@ const elements = {
   addZoneForm: document.querySelector("#addZoneForm"),
   themeToggle: document.querySelector("#themeToggle"),
   formatToggle: document.querySelector("#formatToggle"),
-  sortEarly: document.querySelector("#sortEarly"),
-  sortLate: document.querySelector("#sortLate"),
+  sortToggle: document.querySelector("#sortToggle"),
   copyLink: document.querySelector("#copyLink"),
   cetChangeNote: document.querySelector("#cetChangeNote"),
   selectedSummary: document.querySelector("#selectedSummary"),
@@ -158,6 +158,7 @@ function normalizeState(input) {
     zoneNotes: normalizeZoneNotes(input.zoneNotes, nextZones),
     homeZone,
     hour24: Boolean(input.hour24),
+    sortDirection: input.sortDirection === -1 ? -1 : input.sortDirection === 1 ? 1 : null,
     theme: input.theme === "dark" ? "dark" : "light",
     selectedIndex: Number.isInteger(input.selectedIndex) ? input.selectedIndex : null
   };
@@ -427,6 +428,8 @@ function renderControls() {
   elements.themeToggle.setAttribute("aria-pressed", String(state.theme === "dark"));
   elements.formatToggle.textContent = state.hour24 ? "12" : "24";
   elements.formatToggle.setAttribute("aria-pressed", String(state.hour24));
+  elements.sortToggle.textContent = state.sortDirection === 1 ? "Sort+" : state.sortDirection === -1 ? "Sort-" : "Sort";
+  elements.sortToggle.setAttribute("aria-pressed", String(state.sortDirection !== null));
 }
 
 function applyTheme() {
@@ -660,9 +663,11 @@ function moveZone(zone, direction) {
   render();
 }
 
-function sortZones(direction) {
+function toggleSortZones() {
+  const direction = state.sortDirection === 1 ? -1 : 1;
   const now = new Date();
   state.zones = [...state.zones].sort((a, b) => direction * (getOffsetMinutes(now, a) - getOffsetMinutes(now, b)));
+  state.sortDirection = direction;
   persist();
   render();
 }
@@ -722,8 +727,7 @@ function bindEvents() {
     render();
   });
 
-  elements.sortEarly.addEventListener("click", () => sortZones(1));
-  elements.sortLate.addEventListener("click", () => sortZones(-1));
+  elements.sortToggle.addEventListener("click", toggleSortZones);
   elements.copyLink.addEventListener("click", copyViewLink);
 }
 
