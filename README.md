@@ -1,11 +1,3 @@
-# World Clock
-
-A local, offline-friendly world clock and time converter inspired by the workflow of World Time Buddy, implemented from scratch for personal use.
-
-## How to use
-
-Open `index.html` in a browser. No web server, package install, CDN, or internet connection is required.
-
 ## Features
 
 - Multiple time-zone rows with live seconds.

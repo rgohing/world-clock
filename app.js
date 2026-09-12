@@ -93,15 +93,15 @@ const ZONE_CATALOG = [
 ];
 
 const DEFAULT_STATE = {
-  zones: ["Asia/Singapore", "Asia/Manila", "Europe/Copenhagen", "Australia/Sydney", "Asia/Kolkata", "Pacific/Auckland"],
+  zones: ["Europe/Copenhagen"],
   zoneNotes: {},
-  homeZone: "Asia/Singapore",
+  homeZone: "Europe/Copenhagen",
   hour24: false,
   theme: "light",
   selectedIndex: null
 };
 
-const STORAGE_KEY = "dms-world-clock-state";
+const STORAGE_KEY = "world-clock-state";
 const ZONE_NOTE_MAX_LENGTH = 100;
 const SLOT_COUNT = 48;
 const SLOT_BACKTRACK = 8;
@@ -516,6 +516,7 @@ function renderRows(now, slots, selectedIndex) {
       });
       button.addEventListener("click", () => {
         state.selectedIndex = index;
+        hoverIndex = null;
         persist();
         render({ force: true });
       });
