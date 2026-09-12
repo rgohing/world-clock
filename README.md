@@ -25,6 +25,6 @@ Open `index.html` in a browser. No web server, package install, CDN, or internet
 - Shows the current year's exact CET/CEST change dates and transition time before the clock board, with the start, resume, and next-change details on separate lines.
 - Improves dark-theme readability on yellow daytime and workday hour tiles.
 
-## Offline behavior
+## Behavior
 
 The app uses the browser's built-in `Intl.DateTimeFormat` and IANA time-zone database. That means daylight saving time and half-hour offsets are handled by the browser without downloading scripts or data files.

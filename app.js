@@ -334,7 +334,7 @@ function classifyHour(hour) {
 }
 
 function render({ force = false } = {}) {
-  if (!force && (searchIsActive || noteEditZone)) {
+  if (!force && (searchIsActive || noteEditZone || hoverIndex !== null)) {
     return;
   }
 
@@ -511,12 +511,13 @@ function renderRows(now, slots, selectedIndex) {
       });
       button.addEventListener("mouseleave", () => {
         hoverIndex = null;
-        render();
+        renderSelectedSummary(slots, state.selectedIndex);
+        highlightIndex(null);
       });
       button.addEventListener("click", () => {
         state.selectedIndex = index;
         persist();
-        render();
+        render({ force: true });
       });
       hourGrid.append(button);
     });

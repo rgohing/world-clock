@@ -176,6 +176,8 @@ h1 {
 
 .now-card strong {
   display: block;
+  height: 2.9em;
+  overflow: auto;
   font-size: 1.05rem;
   line-height: 1.35;
 }
