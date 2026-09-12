@@ -122,6 +122,7 @@ const elements = {
   copyLink: document.querySelector("#copyLink"),
   cetChangeNote: document.querySelector("#cetChangeNote"),
   selectedSummary: document.querySelector("#selectedSummary"),
+  clockBoard: document.querySelector(".clock-board"),
   dateHeader: document.querySelector("#dateHeader"),
   clockRows: document.querySelector("#clockRows"),
   rowTemplate: document.querySelector("#rowTemplate")
@@ -337,6 +338,7 @@ function render({ force = false } = {}) {
     return;
   }
 
+  const scrollPosition = getScrollPosition();
   const now = new Date();
   const slots = buildSlots(now);
   const selectedIndex = hoverIndex ?? state.selectedIndex;
@@ -346,6 +348,22 @@ function render({ force = false } = {}) {
   renderDateHeader(slots);
   renderRows(now, slots, selectedIndex);
   renderSelectedSummary(slots, selectedIndex);
+  restoreScrollPosition(scrollPosition);
+}
+
+function getScrollPosition() {
+  return {
+    windowX: window.scrollX,
+    windowY: window.scrollY,
+    boardLeft: elements.clockBoard?.scrollLeft || 0
+  };
+}
+
+function restoreScrollPosition(scrollPosition) {
+  if (elements.clockBoard) {
+    elements.clockBoard.scrollLeft = scrollPosition.boardLeft;
+  }
+  window.scrollTo(scrollPosition.windowX, scrollPosition.windowY);
 }
 
 function renderCetChangeNote(now) {
@@ -470,6 +488,7 @@ function renderRows(now, slots, selectedIndex) {
       if (noteInput.value !== sanitized) {
         noteInput.value = sanitized;
       }
+      resizeZoneNote(noteInput);
     });
     noteInput.addEventListener("blur", () => {
       noteEditZone = null;
@@ -503,6 +522,7 @@ function renderRows(now, slots, selectedIndex) {
     });
 
     elements.clockRows.append(row);
+    resizeZoneNote(noteInput);
   }
 }
 
@@ -529,6 +549,11 @@ function renderSelectedSummary(slots, selectedIndex) {
 
 function getZoneNote(zone) {
   return state.zoneNotes?.[zone] || "";
+}
+
+function resizeZoneNote(noteInput) {
+  noteInput.style.height = "auto";
+  noteInput.style.height = `${noteInput.scrollHeight}px`;
 }
 
 function setZoneNote(zone, note) {

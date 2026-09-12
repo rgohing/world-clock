@@ -13,7 +13,7 @@ Open `index.html` in a browser. No web server, package install, CDN, or internet
 - Hover an hour tile to compare the same instant across all locations.
 - Click an hour tile to keep it selected.
 - Add, remove, reorder, and set a home location.
-- Add a description or note of up to 100 characters for each selected time zone.
+- Add a multiline description or note of up to 100 characters for each selected time zone; each row expands automatically as notes wrap or gain line breaks.
 - Search countries, standard time names, cities, and abbreviations such as `India`, `India Standard Time`, `IST`, `Pakistan Standard Time`, `PKT`, `Australian Western Standard Time`, `AWST`, `Central Time (US)`, `CST/CDT`, `Central European Time`, and `CET/CEST`.
 - Toggle 12-hour and 24-hour display.
 - Toggle between light and dark themes.
