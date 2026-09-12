@@ -106,11 +106,13 @@ const STORAGE_KEY = "world-clock-state";
 const ZONE_NOTE_MAX_LENGTH = 100;
 const SLOT_COUNT = 48;
 const SLOT_BACKTRACK = 8;
+const PANEL_FADE_DURATION = 180;
 let state = loadState();
 let hoverIndex = null;
 let timer = null;
 let searchIsActive = false;
 let noteEditZone = null;
+let selectedDetailsPanelIsOpen = false;
 
 const elements = {
   zoneSearch: document.querySelector("#zoneSearch"),
@@ -122,6 +124,9 @@ const elements = {
   copyLink: document.querySelector("#copyLink"),
   cetChangeNote: document.querySelector("#cetChangeNote"),
   selectedSummary: document.querySelector("#selectedSummary"),
+  selectedDetailsPanel: document.querySelector("#selectedDetailsPanel"),
+  selectedDetailsClose: document.querySelector("#selectedDetailsClose"),
+  selectedDetailsList: document.querySelector("#selectedDetailsList"),
   clockBoard: document.querySelector(".clock-board"),
   dateHeader: document.querySelector("#dateHeader"),
   clockRows: document.querySelector("#clockRows"),
@@ -349,6 +354,7 @@ function render({ force = false } = {}) {
   renderDateHeader(slots);
   renderRows(now, slots, selectedIndex);
   renderSelectedSummary(slots, selectedIndex);
+  renderSelectedDetailsPanel(slots, state.selectedIndex);
   restoreScrollPosition(scrollPosition);
 }
 
@@ -520,6 +526,7 @@ function renderRows(now, slots, selectedIndex) {
       button.addEventListener("click", () => {
         state.selectedIndex = index;
         hoverIndex = null;
+        selectedDetailsPanelIsOpen = true;
         persist();
         render({ force: true });
       });
@@ -532,13 +539,66 @@ function renderRows(now, slots, selectedIndex) {
 }
 
 function renderSelectedSummary(slots, selectedIndex) {
-  if (selectedIndex === null || !slots[selectedIndex]) {
+  const details = getSelectedSummaryDetails(slots, selectedIndex);
+  if (!details.length) {
     elements.selectedSummary.textContent = "Move over an hour tile";
     return;
   }
 
+  elements.selectedSummary.textContent = details.map((detail) => `${detail.label}: ${detail.time}`).join(" | ");
+}
+
+function renderSelectedDetailsPanel(slots, selectedIndex) {
+  if (!elements.selectedDetailsPanel || !selectedDetailsPanelIsOpen) {
+    return;
+  }
+
+  const details = getSelectedSummaryDetails(slots, selectedIndex);
+  if (!details.length) {
+    closeSelectedDetailsPanel();
+    return;
+  }
+
+  elements.selectedDetailsList.innerHTML = "";
+  for (const detail of details) {
+    const row = document.createElement("div");
+    row.className = "selected-details-row";
+    const label = document.createElement("span");
+    label.textContent = detail.label;
+    const time = document.createElement("strong");
+    time.textContent = detail.time;
+    row.append(label, time);
+    elements.selectedDetailsList.append(row);
+  }
+
+  elements.selectedDetailsPanel.classList.remove("is-closing");
+  elements.selectedDetailsPanel.hidden = false;
+  window.requestAnimationFrame(() => elements.selectedDetailsPanel.classList.add("is-open"));
+}
+
+function closeSelectedDetailsPanel() {
+  if (!elements.selectedDetailsPanel) {
+    return;
+  }
+
+  selectedDetailsPanelIsOpen = false;
+  elements.selectedDetailsPanel.classList.remove("is-open");
+  elements.selectedDetailsPanel.classList.add("is-closing");
+  window.setTimeout(() => {
+    if (!selectedDetailsPanelIsOpen) {
+      elements.selectedDetailsPanel.hidden = true;
+      elements.selectedDetailsPanel.classList.remove("is-closing");
+    }
+  }, PANEL_FADE_DURATION);
+}
+
+function getSelectedSummaryDetails(slots, selectedIndex) {
+  if (selectedIndex === null || !slots[selectedIndex]) {
+    return [];
+  }
+
   const slot = slots[selectedIndex];
-  const details = state.zones.map((zoneName) => {
+  return state.zones.map((zoneName) => {
     const zone = getZone(zoneName);
     const time = formatDate(slot, zone.zone, {
       weekday: "short",
@@ -546,10 +606,8 @@ function renderSelectedSummary(slots, selectedIndex) {
       minute: "2-digit",
       hour12: !state.hour24
     });
-    return `${zone.label}: ${time}`;
+    return { label: zone.label, time };
   });
-
-  elements.selectedSummary.textContent = details.join(" | ");
 }
 
 function getZoneNote(zone) {
@@ -729,6 +787,7 @@ function bindEvents() {
 
   elements.sortToggle.addEventListener("click", toggleSortZones);
   elements.copyLink.addEventListener("click", copyViewLink);
+  elements.selectedDetailsClose.addEventListener("click", closeSelectedDetailsPanel);
 }
 
 function startClock() {
