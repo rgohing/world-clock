@@ -8,6 +8,36 @@ const ZONE_CATALOG = [
     aliases: ["Dublin", "Irish Standard Time", "GMT/IST", "IST Ireland", "Ireland IST"]
   },
   {
+    label: "UTC+0 Year-Round",
+    country: "UTC+0 year-round countries",
+    standardName: "Greenwich Mean Time",
+    abbreviation: "GMT/UTC+0",
+    zone: "Etc/UTC",
+    aliases: [
+      "Iceland",
+      "Burkina Faso",
+      "Ghana",
+      "Guinea",
+      "Guinea-Bissau",
+      "Ivory Coast",
+      "Cote d'Ivoire",
+      "Côte d'Ivoire",
+      "Liberia",
+      "Mali",
+      "Mauritania",
+      "Sao Tome and Principe",
+      "São Tomé and Príncipe",
+      "Senegal",
+      "Sierra Leone",
+      "The Gambia",
+      "Gambia",
+      "Togo",
+      "GMT",
+      "UTC",
+      "UTC+0"
+    ]
+  },
+  {
     label: "India",
     country: "India",
     standardName: "India Standard Time",
