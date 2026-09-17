@@ -8,7 +8,7 @@ const ZONE_CATALOG = [
     aliases: ["Dublin", "Irish Standard Time", "GMT/IST", "IST Ireland", "Ireland IST"]
   },
   {
-    label: "UTC+0 Year-Round",
+    label: "UTC+0 | GMT+0 Year-Round",
     country: "UTC+0 year-round countries",
     standardName: "Greenwich Mean Time",
     abbreviation: "GMT/UTC+0",
